@@ -25,6 +25,11 @@ function App() {
       <button className="close" onClick={() => setIsOpen(!isOpen)}>
         &times; {isOpen === true ? <p>close</p> : <p>open</p>}
       </button>
+      {!isOpen && (
+        <div className="steps">
+          <h2 className="message">Tab to open icon</h2>
+        </div>
+      )}
       {isOpen && (
         <div class="steps">
           <div class="numbers">
@@ -32,28 +37,39 @@ function App() {
             <div class={`step-2 ${step >= 2 ? "active" : ""}`}>2</div>
             <div class={`step-3 ${step >= 3 ? "active" : ""}`}>3</div>
           </div>
-
-          <p class="message">{`Step ${step}: ${messages[step - 1]}`}</p>
-
+          {/* <p class="message">{`Step ${step}: ${messages[step - 1]}`}</p> */}
+          <StepMessage step={step}>{messages[step - 1]}</StepMessage>
           <div class="buttons">
-            <button
-              style={{ backgroundColor: "#7950f2", color: "#fff" }}
-              class="previous"
-              onClick={previousHendle}
-            >
-              Previous
-            </button>
-            <button
-              style={{ backgroundColor: "#7950f2", color: "#fff" }}
-              class="next"
-              onClick={nextHendle}
-            >
-              Next
-            </button>
+            <Button textColor="#fff" bgColor="#7950f2" onClick={previousHendle}>
+              <span>👈</span> Previous
+            </Button>
+            <Button textColor="#fff" bgColor="#7950f2" onClick={nextHendle}>
+              Next <span>👉</span>
+            </Button>
           </div>
         </div>
       )}
     </>
+  );
+}
+
+function Button({ textColor, bgColor, onClick, children }) {
+  return (
+    <button
+      style={{ color: textColor, backgroundColor: bgColor }}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
+
+function StepMessage({ step, children }) {
+  return (
+    <div className="message">
+      <h3>Step {step}</h3>
+      {children}
+    </div>
   );
 }
 
