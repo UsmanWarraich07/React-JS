@@ -27,7 +27,7 @@ function App() {
       </button>
       {!isOpen && (
         <div className="steps">
-          <h2 className="message">Tab to open icon</h2>
+          <h2 className="message">Tab the icon to open!</h2>
         </div>
       )}
       {isOpen && (
