@@ -25,7 +25,7 @@ export default function RatingStar({
   const textStyle = {
     lineHeight: 1,
     margin: 0,
-    fontSize: "30px",
+    fontSize: "24px",
     color,
   };
   return (
