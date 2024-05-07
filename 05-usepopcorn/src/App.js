@@ -54,7 +54,7 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [query, setQuery] = useState("Titanic");
+  const [query, setQuery] = useState("");
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
   //  const query = "sultan";
@@ -77,12 +77,15 @@ export default function App() {
 
   useEffect(
     function () {
+      const controller = new AbortController();
+
       async function fetchMovies() {
         try {
           setIsLoading(true);
           setError("");
           const res = await fetch(
-            `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+            `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            { signal: controller.signal }
           );
           if (!res.ok) throw new Error("Somting went wrong with fetch movies");
           const data = await res.json();
@@ -90,8 +93,10 @@ export default function App() {
           if (data.Response === "False") throw new Error("Movies not found");
           setMovies(data.Search);
         } catch (err) {
-          console.error(err.message);
-          setError(err.message);
+          if (err.name !== "AbortError") {
+            console.error(err.message);
+            setError(err.message);
+          }
         } finally {
           setIsLoading(false);
         }
@@ -102,9 +107,27 @@ export default function App() {
         return;
       }
       fetchMovies();
+
+      return function () {
+        controller.abort();
+      };
     },
     [query]
   );
+
+  useEffect(function () {
+    function callback(e) {
+      if (e.code === "Backspace") {
+        handleCloseMovie();
+      }
+    }
+
+    document.addEventListener("keydown", callback);
+    return function () {
+      document.removeEventListener("keydown", callback);
+    };
+  }, []);
+
   return (
     <>
       <Navbar movies={movies} query={query} setQuery={setQuery} />
@@ -230,6 +253,18 @@ function MoviesDetails({ selectedId, onCloseMovie, onWatchMovie, watched }) {
   const handleStarRated = watched.find(
     (movie) => movie.imdbID === selectedId
   )?.userRating;
+
+  useEffect(
+    function () {
+      if (!movie.Title) return;
+      document.title = `Movie | ${movie.Title}`;
+
+      return function () {
+        document.title = "usePopCorn";
+      };
+    },
+    [movie.Title]
+  );
 
   useEffect(
     function () {
