@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import RatingStar from "./Star";
 // const tempMovieData = [
 //   {
@@ -52,11 +52,14 @@ const average = (arr) =>
 const KEY = "b700a97";
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  const [watched, setWatched] = useState(function () {
+    const storeValue = localStorage.getItem("watched");
+    return JSON.parse(storeValue);
+  });
   //  const query = "sultan";
   //console.log(setMovies);
 
@@ -74,6 +77,13 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
+
+  useEffect(
+    function () {
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
 
   useEffect(
     function () {
@@ -163,6 +173,10 @@ function ErrorMessage({ message }) {
   );
 }
 function Navbar({ movies, query, setQuery }) {
+  const inputEl = useRef(null);
+  useEffect(function () {
+    inputEl.current.focus();
+  }, []);
   return (
     <nav className="nav-bar">
       <div className="logo">
@@ -175,6 +189,7 @@ function Navbar({ movies, query, setQuery }) {
         placeholder="Search movies..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        ref={inputEl}
       />
       <p className="num-results">
         Found <strong>{movies.length}</strong> results
