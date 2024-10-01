@@ -8,8 +8,8 @@ const messages = [
 ];
 
 function App() {
-  const [step, setStep] = useState(1);
   const [isOpen, setIsOpen] = useState(true);
+  const [step, setStep] = useState(1);
   function previousHendle() {
     if (step > 1) {
       setStep(step - 1);
